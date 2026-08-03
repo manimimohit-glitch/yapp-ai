@@ -1,0 +1,21 @@
+# Python virtual environment (never commit this)
+.venv/
+venv/
+
+# Generated audio files
+*.mp3
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Local ngrok/pyngrok
+ngrok*

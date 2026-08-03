@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Yapp.ai — Text ↔ Voice AI Studio</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --black: #111111;
+    --cream: #fdf6e3;
+    --white: #ffffff;
+    --yellow: #ffd400;
+    --blue: #2d6ff2;
+    --pink: #ff4d6d;
+    --green: #00c853;
+    --purple: #7b2ff7;
+    --orange: #ff6d00;
+    --grid: rgba(17, 17, 17, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    color: var(--black);
+    background-color: var(--cream);
+    background-image:
+      linear-gradient(var(--grid) 1.5px, transparent 1.5px),
+      linear-gradient(90deg, var(--grid) 1.5px, transparent 1.5px);
+    background-size: 32px 32px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3 { font-family: 'Archivo Black', sans-serif; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 24px 60px; }
+
+  /* ==================== HEADER ==================== */
+  header { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; position: relative; }
+
+  .logo {
+    background: var(--black); color: var(--yellow);
+    border: 4px solid var(--black);
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 1.5rem; padding: 12px 18px;
+    box-shadow: 8px 8px 0 var(--pink);
+    transform: rotate(-3deg);
+    white-space: nowrap;
+    position: relative;
+  }
+  .logo::after {
+    content: "v2.0"; position: absolute; top: -12px; right: -14px;
+    background: var(--green); color: #fff; font-size: 0.55rem;
+    padding: 3px 7px; border: 2px solid var(--black);
+    transform: rotate(8deg); letter-spacing: 1px;
+  }
+
+  .headline h1 {
+    font-size: clamp(2.8rem, 7vw, 5rem);
+    line-height: 0.92;
+    letter-spacing: -2px;
+    text-transform: uppercase;
+  }
+  .headline h1 .arrow { color: var(--pink); display: inline-block; }
+  .headline .sub {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem; font-weight: 600; color: #555;
+    margin-top: 8px; letter-spacing: 1px; text-transform: uppercase;
+  }
+
+  .badges { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .sticker {
+    display: inline-flex; align-items: center; gap: 5px;
+    border: 3px solid var(--black); padding: 6px 14px;
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 0.72rem; text-transform: uppercase;
+    box-shadow: 4px 4px 0 var(--black);
+    letter-spacing: 0.5px;
+  }
+  .sticker.yellow { background: var(--yellow); }
+  .sticker.blue   { background: var(--blue); color: #fff; }
+  .sticker.green  { background: var(--green); color: #fff; }
+  .sticker.pink   { background: var(--pink); color: #fff; }
+  .sticker.purple { background: var(--purple); color: #fff; }
+  .sticker.orange { background: var(--orange); color: #fff; }
+
+  /* floating decorations */
+  .deco { position: absolute; font-family: 'Archivo Black', sans-serif; user-select: none; pointer-events: none; opacity: 0.15; font-size: 8rem; }
+  .deco.star { color: var(--pink); top: -10px; right: -20px; transform: rotate(15deg); }
+  .deco.plus { color: var(--blue); bottom: 50%; left: -30px; transform: rotate(-10deg); }
+
+  /* ==================== MARQUEE ==================== */
+  .marquee {
+    margin: 28px 0;
+    border: 3px solid var(--black);
+    overflow: hidden;
+    white-space: nowrap;
+    box-shadow: 6px 6px 0 var(--black);
+    position: relative;
+  }
+  .marquee .track {
+    display: inline-block;
+    padding: 10px 0;
+    font-family: 'Archivo Black', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    animation: slide 20s linear infinite;
+  }
+  .marquee.yellow .track { background: var(--yellow); color: var(--black); font-size: 0.9rem; }
+  .marquee.dark .track   { background: var(--black); color: var(--yellow); font-size: 0.8rem; }
+  @keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ==================== SECTION LABELS ==================== */
+  .section-label {
+    display: flex; align-items: center; gap: 14px;
+    margin: 32px 0 16px;
+  }
+  .section-label .line { flex: 1; height: 3px; background: var(--black); }
+  .section-label h2 {
+    font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px;
+    white-space: nowrap;
+  }
+  .section-label .icon {
+    font-size: 1.4rem; background: var(--black); color: var(--yellow);
+    width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+    border: 3px solid var(--black); box-shadow: 4px 4px 0 var(--pink);
+    transform: rotate(-3deg);
+  }
+
+  /* ==================== CARDS ==================== */
+  .card {
+    background: var(--white);
+    border: 3px solid var(--black);
+    box-shadow: 7px 7px 0 var(--black);
+    position: relative;
+  }
+  .card::before {
+    content: ""; position: absolute; top: -1px; left: -1px; right: -1px;
+    height: 5px; background: var(--yellow);
+  }
+  .card.stt-card::before { background: var(--pink); }
+
+  .card-head {
+    border-bottom: 3px solid var(--black);
+    padding: 14px 18px;
+    font-family: 'Archivo Black', sans-serif;
+    text-transform: uppercase;
+    font-size: 1rem;
+    letter-spacing: 1.5px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--cream);
+  }
+  .card-head .tag {
+    font-family: 'Space Grotesk', sans-serif; font-size: 0.65rem;
+    border: 2px solid var(--black); padding: 3px 10px;
+    box-shadow: 2px 2px 0 var(--black);
+    text-transform: uppercase; letter-spacing: 1px; font-weight: 700;
+  }
+  .card .body { padding: 20px; }
+
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 24px;
+    margin-top: 8px;
+  }
+
+  /* ==================== TEXTAREA ==================== */
+  textarea {
+    width: 100%; min-height: 220px; resize: vertical;
+    border: 3px solid var(--black);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem; line-height: 1.6; padding: 16px;
+    background: var(--cream); color: var(--black);
+    outline: none; transition: box-shadow 0.15s;
+  }
+  textarea:focus { box-shadow: 5px 5px 0 var(--yellow); }
+  textarea::placeholder { color: #999; }
+  .count {
+    margin-top: 12px; font-size: 0.78rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; color: #666;
+  }
+  .count b { color: var(--black); }
+
+  /* ==================== VOICE SELECT ==================== */
+  select {
+    width: 100%;
+    border: 3px solid var(--black); padding: 12px 14px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 0.95rem;
+    background: var(--yellow); color: var(--black);
+    box-shadow: 4px 4px 0 var(--black);
+    outline: none; cursor: pointer;
+    transition: box-shadow 0.15s, transform 0.1s;
+  }
+  select:hover { transform: translate(-1px,-1px); box-shadow: 5px 5px 0 var(--black); }
+  select:focus { box-shadow: 4px 4px 0 var(--blue); }
+  .voice-note {
+    margin-top: 12px; font-size: 0.78rem; font-weight: 600;
+    color: #555; padding: 8px 12px; background: var(--cream);
+    border: 2px dashed var(--black);
+  }
+
+  /* ==================== SLIDERS ==================== */
+  .slider-row { margin-bottom: 20px; }
+  .slider-row:last-child { margin-bottom: 0; }
+  .slider-row .label {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'Archivo Black', sans-serif;
+    text-transform: uppercase; font-size: 0.85rem; margin-bottom: 10px;
+  }
+  .slider-row output {
+    background: var(--black); color: var(--yellow);
+    padding: 3px 12px; font-size: 0.8rem;
+    box-shadow: 3px 3px 0 var(--blue);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 16px;
+    border: 3px solid var(--black);
+    background: var(--cream);
+    box-shadow: 3px 3px 0 var(--black);
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 28px; height: 28px;
+    background: var(--yellow); border: 3px solid var(--black);
+    box-shadow: 3px 3px 0 var(--black);
+    transition: transform 0.1s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  input[type="range"]::-moz-range-thumb {
+    width: 24px; height: 24px; background: var(--yellow);
+    border: 3px solid var(--black); border-radius: 0;
+  }
+
+  /* ==================== BUTTONS ==================== */
+  .actions { display: flex; gap: 14px; align-items: stretch; margin-top: 24px; flex-wrap: wrap; }
+  .btn {
+    font-family: 'Archivo Black', sans-serif;
+    text-transform: uppercase; font-size: 1rem; letter-spacing: 1px;
+    border: 3px solid var(--black);
+    box-shadow: 6px 6px 0 var(--black);
+    padding: 16px 24px; cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+    color: var(--black); display: inline-flex; align-items: center; gap: 6px;
+    white-space: nowrap;
+  }
+  .btn:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--black); }
+  .btn:active { transform: translate(4px, 4px); box-shadow: 1px 1px 0 var(--black); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: 4px 4px 0 var(--black) !important; }
+  .btn.speak  { background: var(--yellow); flex: 2; font-size: 1.15rem; }
+  .btn.download { background: var(--blue); color: #fff; flex: 1; }
+  .btn.speak .icon { font-size: 1.3rem; }
+
+  /* ==================== STATUS BAR ==================== */
+  .status {
+    margin-top: 20px;
+    border: 3px solid var(--black);
+    padding: 14px 18px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+    display: flex; align-items: center; gap: 14px;
+    background: var(--white);
+    box-shadow: 4px 4px 0 var(--black);
+  }
+  .status .dot {
+    width: 14px; height: 14px; min-width: 14px;
+    background: var(--green); border: 2px solid var(--black);
+    animation: blink 1.5s infinite;
+  }
+  .status.busy .dot { background: var(--orange); }
+  .status.error .dot { background: var(--pink); }
+  .status .text { flex: 1; }
+
+  audio {
+    width: 100%; margin-top: 18px;
+    border: 3px solid var(--black); box-shadow: 5px 5px 0 var(--black);
+    height: 48px; background: var(--cream);
+  }
+
+  /* ==================== EQ BARS ==================== */
+  .eq { display: flex; align-items: flex-end; gap: 4px; height: 28px; }
+  .eq span { width: 7px; height: 8px; background: #ccc; border: 2px solid var(--black); }
+  .eq.live span { background: var(--green); animation: bounce 0.6s infinite alternate; }
+  .eq.live span:nth-child(2) { animation-delay: 0.1s; }
+  .eq.live span:nth-child(3) { animation-delay: 0.2s; }
+  .eq.live span:nth-child(4) { animation-delay: 0.3s; }
+  .eq.live span:nth-child(5) { animation-delay: 0.4s; }
+  @keyframes bounce { from { height: 8px; } to { height: 28px; } }
+  @keyframes blink  { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+  /* ==================== STT — RECORDING ==================== */
+  .rec-controls { display: flex; gap: 14px; align-items: stretch; flex-wrap: wrap; }
+
+  .rec-btn {
+    background: var(--pink); color: #fff;
+    font-family: 'Archivo Black', sans-serif;
+    text-transform: uppercase; font-size: 1.1rem; letter-spacing: 1px;
+    border: 3px solid var(--black); box-shadow: 6px 6px 0 var(--black);
+    padding: 18px 28px; cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .rec-btn:hover { transform: translate(-2px,-2px); box-shadow: 8px 8px 0 var(--black); }
+  .rec-btn:active { transform: translate(4px,4px); box-shadow: 1px 1px 0 var(--black); }
+  .rec-btn.recording {
+    background: #ff0000;
+    animation: rec-pulse 0.6s infinite alternate;
+  }
+  @keyframes rec-pulse {
+    from { box-shadow: 6px 6px 0 var(--black); }
+    to   { box-shadow: 10px 10px 0 #ff0000; transform: scale(1.04); }
+  }
+  .rec-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .stop-btn {
+    background: var(--black); color: #fff;
+    font-family: 'Archivo Black', sans-serif;
+    text-transform: uppercase; font-size: 1rem; letter-spacing: 1px;
+    border: 3px solid var(--black); box-shadow: 6px 6px 0 var(--pink);
+    padding: 18px 28px; cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stop-btn:hover { transform: translate(-2px,-2px); box-shadow: 8px 8px 0 var(--pink); }
+  .stop-btn:active { transform: translate(4px,4px); box-shadow: 1px 1px 0 var(--pink); }
+
+  .upload-label {
+    background: var(--purple); color: #fff;
+    font-family: 'Archivo Black', sans-serif;
+    text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;
+    border: 3px solid var(--black); box-shadow: 6px 6px 0 var(--black);
+    padding: 18px 22px; cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .upload-label:hover { transform: translate(-2px,-2px); box-shadow: 8px 8px 0 var(--black); }
+  .upload-label:active { transform: translate(4px,4px); box-shadow: 1px 1px 0 var(--black); }
+
+  .rec-status {
+    margin-top: 16px; padding: 12px 16px;
+    border: 3px solid var(--black); background: var(--white);
+    font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;
+    display: none; align-items: center; gap: 12px;
+    box-shadow: 4px 4px 0 var(--black);
+  }
+  .rec-status.on { display: flex; }
+  .rec-dot {
+    width: 14px; height: 14px; min-width: 14px;
+    background: #ff0000; border: 2px solid var(--black);
+    animation: blink 0.6s infinite;
+  }
+
+  /* ==================== STT — RESULTS ==================== */
+  .results { margin-top: 20px; }
+  .segment {
+    border: 3px solid var(--black); padding: 14px 16px; margin-bottom: 12px;
+    background: var(--cream);
+    box-shadow: 5px 5px 0 var(--black);
+    position: relative;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .segment:hover { transform: translate(-1px,-1px); box-shadow: 6px 6px 0 var(--black); }
+  .segment::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 5px; background: var(--yellow);
+  }
+
+  .ts-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--yellow); border: 2px solid var(--black);
+    padding: 3px 12px; font-family: 'Archivo Black', sans-serif;
+    font-size: 0.7rem; box-shadow: 2px 2px 0 var(--black);
+    margin-bottom: 8px; letter-spacing: 0.5px;
+  }
+  .ts-badge .arrow { color: var(--pink); font-size: 0.8rem; }
+
+  .seg-text { font-size: 1.05rem; line-height: 1.7; }
+  .word {
+    display: inline; padding: 2px 3px; cursor: default;
+    transition: background 0.1s, border-radius 0.1s;
+    border-bottom: 2px solid transparent;
+  }
+  .word:hover {
+    background: var(--yellow);
+    border-bottom: 2px solid var(--black);
+  }
+
+  .transcript-area {
+    width: 100%; min-height: 100px; resize: vertical;
+    border: 3px solid var(--black);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem; line-height: 1.6; padding: 16px;
+    background: var(--cream); margin-top: 18px; outline: none;
+    transition: box-shadow 0.15s;
+  }
+  .transcript-area:focus { box-shadow: 5px 5px 0 var(--yellow); }
+
+  .stt-info {
+    margin-top: 12px; font-size: 0.75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; color: #666;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stt-info::before {
+    content: ""; display: inline-block; width: 20px; height: 3px;
+    background: var(--pink);
+  }
+
+  .stt-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .stt-actions .btn { font-size: 0.8rem; padding: 10px 16px; }
+  .stt-actions .copy-btn { background: var(--green); color: #fff; }
+  .stt-actions .txt-btn  { background: var(--blue); color: #fff; }
+  .stt-actions .srt-btn  { background: var(--yellow); }
+
+  /* ==================== FOOTER ==================== */
+  .footer-bar {
+    margin-top: 48px; padding: 18px 24px;
+    border: 3px solid var(--black);
+    background: var(--black); color: var(--cream);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px;
+    font-size: 0.75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    box-shadow: 6px 6px 0 var(--pink);
+  }
+  .footer-bar a { color: var(--yellow); text-decoration: none; }
+
+  /* ==================== RESPONSIVE ==================== */
+  @media (max-width: 768px) {
+    .wrap { padding: 20px 14px 40px; }
+    .main-grid { grid-template-columns: 1fr; }
+    .actions { flex-direction: column; }
+    .btn.speak, .btn.download { flex: none; width: 100%; justify-content: center; }
+    .rec-controls { flex-direction: column; }
+    .rec-btn, .stop-btn, .upload-label { width: 100%; justify-content: center; }
+    .stt-actions { flex-direction: column; }
+    .stt-actions .btn { width: 100%; justify-content: center; }
+    .deco { display: none; }
+    .footer-bar { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deco star">✦</div>
+<div class="deco plus">✚</div>
+
+<div class="wrap">
+
+  <!-- ==================== HEADER ==================== -->
+  <header>
+    <div class="logo">⚡ yap.ai</div>
+    <div class="headline">
+      <h1>text<span class="arrow">↔</span>voice<br />AI&nbsp;studio</h1>
+      <div class="sub">Type to speak · Speak to type · No cap, it's free</div>
+    </div>
+  </header>
+
+  <div class="badges">
+    <span class="sticker yellow">🔥 100% Free</span>
+    <span class="sticker blue">🧠 Neural Voices</span>
+    <span class="sticker green">✅ No API Key</span>
+    <span class="sticker pink">⚡ No Sign-Up</span>
+    <span class="sticker purple">🔒 Runs Locally</span>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="marquee yellow">
+    <div class="track">
+      ★ TYPE YOUR SCRIPT ★ PICK A VOICE ★ HEAR AI SPEAK ★ RECORD YOUR VOICE ★ GET TIMESTAMPS ★ COPY · DOWNLOAD · SUBTITLE ★ TYPE YOUR SCRIPT ★ PICK A VOICE ★ HEAR AI SPEAK ★ RECORD YOUR VOICE ★ GET TIMESTAMPS ★ COPY · DOWNLOAD · SUBTITLE ★
+    </div>
+  </div>
+
+  <!-- ==================== TEXT → VOICE ==================== -->
+  <div class="section-label">
+    <div class="icon">▶</div>
+    <h2>Text → Voice</h2>
+    <div class="line"></div>
+    <span class="sticker yellow" style="font-size:0.6rem; padding:4px 10px;">TTS</span>
+  </div>
+
+  <div class="main-grid">
+    <section class="card" style="grid-column: 1 / -1;">
+      <div class="card-head">
+        <span>📝 Your Script</span>
+        <span class="tag">Type it</span>
+      </div>
+      <div class="body">
+        <textarea id="text" placeholder="Type anything and the AI will read it out loud…&#10;&#10;Try: Welcome to today's briefing. The solar system formed about four point six billion years ago from a giant cloud of gas and dust."></textarea>
+        <div class="count">
+          <b id="charcount">0</b> characters &nbsp;·&nbsp; <b id="wordcount">0</b> words
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <span>🎙️ Pick a Voice</span>
+        <span class="tag">♂♀</span>
+      </div>
+      <div class="body">
+        <select id="voice"></select>
+        <div class="voice-note" id="voicenote">Loading voices…</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <span>🎚️ Speed & Pitch</span>
+        <span class="tag">Tweak</span>
+      </div>
+      <div class="body">
+        <div class="slider-row">
+          <div class="label">
+            <span>⚡ Speed</span>
+            <output id="rateout">+0%</output>
+          </div>
+          <input type="range" id="rate" min="-50" max="50" value="0" />
+        </div>
+        <div class="slider-row">
+          <div class="label">
+            <span>🎵 Pitch</span>
+            <output id="pitchout">+0Hz</output>
+          </div>
+          <input type="range" id="pitch" min="-50" max="50" value="0" />
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="actions">
+    <button class="btn speak" id="speak">
+      <span class="icon">▶</span> Speak It
+    </button>
+    <button class="btn download" id="download" disabled>💾 Save MP3</button>
+  </div>
+
+  <div class="status" id="status">
+    <span class="dot"></span>
+    <span class="text" id="statustext">Ready — pick a voice and hit SPEAK</span>
+    <div class="eq" id="eq">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <audio id="player" controls></audio>
+
+  <!-- ==================== VOICE → TEXT ==================== -->
+  <div class="section-label">
+    <div class="icon" style="background:var(--pink); color:#fff; box-shadow: 4px 4px 0 var(--purple);">🎙</div>
+    <h2>Voice → Text</h2>
+    <div class="line"></div>
+    <span class="sticker pink" style="font-size:0.6rem; padding:4px 10px;">STT</span>
+  </div>
+
+  <section class="card stt-card">
+    <div class="card-head">
+      <span>🎤 Record or Upload</span>
+      <span class="tag">Timestamps</span>
+    </div>
+    <div class="body">
+      <div class="rec-controls">
+        <button class="rec-btn" id="recBtn">🎙️ Record</button>
+        <button class="stop-btn" id="stopBtn" style="display:none;">⏹ Stop</button>
+        <label class="upload-label" for="audioUpload">📁 Upload Audio</label>
+        <input type="file" id="audioUpload" accept="audio/*" hidden />
+      </div>
+
+      <div class="rec-status" id="recStatus">
+        <span class="rec-dot"></span>
+        <span id="recStatusText">Recording…</span>
+      </div>
+
+      <div class="results" id="results"></div>
+
+      <textarea class="transcript-area" id="transcript" readonly
+        placeholder="Transcription with timestamps will appear here after you record or upload audio…"></textarea>
+
+      <div class="stt-info" id="sttInfo"></div>
+
+      <div class="stt-actions">
+        <button class="btn copy-btn" id="copyBtn" disabled>📋 Copy + Timestamps</button>
+        <button class="btn txt-btn" id="dlTxtBtn" disabled>💾 .txt</button>
+        <button class="btn srt-btn" id="dlSrtBtn" disabled>📝 .srt Subtitles</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER MARQUEE -->
+  <div class="marquee dark" style="margin-top: 36px;">
+    <div class="track">
+      ⚡ EDGE-TTS NEURAL VOICES ⚡ WHISPER SPEECH RECOGNITION ⚡ WORD-LEVEL TIMESTAMPS ⚡ FULLY LOCAL & FREE ⚡ EDGE-TTS NEURAL VOICES ⚡ WHISPER SPEECH RECOGNITION ⚡ WORD-LEVEL TIMESTAMPS ⚡ FULLY LOCAL & FREE ⚡
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-bar">
+    <span>Made by Mohit · ⚡ Yapp.ai — free forever, no cap</span>
+    <span>Christopher · Whisper · Word Timestamps</span>
+  </div>
+
+</div>
+
+<script>
+// ==================== TTS — TEXT → VOICE ====================
+const textEl   = document.getElementById("text");
+const voiceEl  = document.getElementById("voice");
+const voiceNote= document.getElementById("voicenote");
+const rateEl   = document.getElementById("rate");
+const pitchEl  = document.getElementById("pitch");
+const rateOut  = document.getElementById("rateout");
+const pitchOut = document.getElementById("pitchout");
+const speakBtn = document.getElementById("speak");
+const dloadBtn = document.getElementById("download");
+const statusEl = document.getElementById("status");
+const statusTxt= document.getElementById("statustext");
+const player   = document.getElementById("player");
+const eq       = document.getElementById("eq");
+const charCount= document.getElementById("charcount");
+const wordCount= document.getElementById("wordcount");
+
+let lastBlobUrl = null;
+
+function setStatus(text, mode) {
+  statusTxt.textContent = text;
+  statusEl.classList.remove("busy", "error");
+  if (mode) statusEl.classList.add(mode);
+}
+
+function shortName(full) {
+  return full.replace("Microsoft ", "").replace(" Online (Natural)", "");
+}
+
+// ---------- VOICE PICKER ----------
+const LOCALE_LABELS = {
+  "en-US": "🇺🇸 US English",
+  "en-GB": "🇬🇧 UK English",
+  "en-IN": "🇮🇳 Indian English",
+  "hi-IN": "🇮🇳 Hindi",
+};
+
+async function loadVoices() {
+  try {
+    const res = await fetch("/api/voices");
+    const voices = await res.json();
+    const groups = {};
+    voices.forEach(v => { (groups[v.Locale] = groups[v.Locale] || []).push(v); });
+    Object.keys(groups).sort().forEach(locale => {
+      const og = document.createElement("optgroup");
+      og.label = LOCALE_LABELS[locale] || locale;
+      groups[locale].forEach(v => {
+        const o = document.createElement("option");
+        o.value = v.ShortName;
+        o.textContent = `${shortName(v.FriendlyName)} — ${v.Gender} (${v.Locale})`;
+        og.appendChild(o);
+      });
+      voiceEl.appendChild(og);
+    });
+    voiceEl.value = "en-US-ChristopherNeural";
+    const sel = voiceEl.selectedOptions[0];
+    voiceNote.textContent = sel ? `Now speaking: ${sel.textContent}` : "";
+  } catch (e) {
+    voiceNote.textContent = "Couldn't load voices. Is the server running?";
+  }
+}
+voiceEl.addEventListener("change", () => {
+  voiceNote.textContent = `Now speaking: ${voiceEl.selectedOptions[0].textContent}`;
+});
+
+// ---------- SLIDERS ----------
+function updateRate()  { rateOut.textContent  = `${rateEl.value >= 0 ? "+" : ""}${rateEl.value}%`; }
+function updatePitch() { pitchOut.textContent = `${pitchEl.value >= 0 ? "+" : ""}${pitchEl.value}Hz`; }
+rateEl.addEventListener("input", updateRate);
+pitchEl.addEventListener("input", updatePitch);
+
+// ---------- CHAR / WORD COUNT ----------
+textEl.addEventListener("input", () => {
+  charCount.textContent = textEl.value.length;
+  wordCount.textContent = textEl.value.trim() ? textEl.value.trim().split(/\s+/).length : 0;
+});
+
+// ---------- SPEAK ----------
+async function speak() {
+  const text = textEl.value.trim();
+  if (!text) { setStatus("Type something first!", "error"); return; }
+  speakBtn.disabled = true;
+  setStatus("Generating audio…", "busy");
+  try {
+    const res = await fetch("/api/tts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text, voice: voiceEl.value,
+        rate: `${rateEl.value >= 0 ? "+" : ""}${rateEl.value}%`,
+        pitch: `${pitchEl.value >= 0 ? "+" : ""}${pitchEl.value}Hz`,
+      }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const blob = await res.blob();
+    if (lastBlobUrl) URL.revokeObjectURL(lastBlobUrl);
+    lastBlobUrl = URL.createObjectURL(blob);
+    player.src = lastBlobUrl;
+    dloadBtn.disabled = false;
+    await player.play();
+    setStatus("Playing — that's your neural AI voice!");
+  } catch (e) {
+    console.error(e);
+    setStatus("Something went wrong. Is the server running?", "error");
+  } finally { speakBtn.disabled = false; }
+}
+speakBtn.addEventListener("click", speak);
+
+dloadBtn.addEventListener("click", () => {
+  if (!lastBlobUrl) return;
+  const a = document.createElement("a");
+  a.href = lastBlobUrl; a.download = "ai-speech.mp3"; a.click();
+});
+
+player.addEventListener("play",  () => eq.classList.add("live"));
+player.addEventListener("pause", () => eq.classList.remove("live"));
+player.addEventListener("ended", () => eq.classList.remove("live"));
+
+document.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") speak();
+});
+
+// ==================== STT — VOICE → TEXT ====================
+const recBtn      = document.getElementById("recBtn");
+const stopBtn     = document.getElementById("stopBtn");
+const audioUpload = document.getElementById("audioUpload");
+const recStatus   = document.getElementById("recStatus");
+const recStatusTxt= document.getElementById("recStatusText");
+const resultsEl   = document.getElementById("results");
+const transcriptEl= document.getElementById("transcript");
+const sttInfoEl   = document.getElementById("sttInfo");
+const copyBtn     = document.getElementById("copyBtn");
+const dlTxtBtn    = document.getElementById("dlTxtBtn");
+const dlSrtBtn    = document.getElementById("dlSrtBtn");
+
+let mediaRecorder = null;
+let audioChunks   = [];
+let lastSegments  = [];
+
+// ---------- RECORDING ----------
+recBtn.addEventListener("click", async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      sendForTranscription(new Blob(audioChunks, { type: mediaRecorder.mimeType }));
+    };
+    mediaRecorder.start();
+    recBtn.classList.add("recording");
+    recBtn.innerHTML = "🔴 Recording…";
+    recBtn.disabled = true;
+    stopBtn.style.display = "";
+    stopBtn.disabled = false;
+    recStatus.classList.add("on");
+    recStatusTxt.textContent = "Listening — speak now!";
+    resultsEl.innerHTML = "";
+    transcriptEl.value = "";
+  } catch (e) {
+    alert("Mic access denied. Please allow microphone permission and try again.");
+  }
+});
+
+stopBtn.addEventListener("click", () => {
+  if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop();
+  recBtn.classList.remove("recording");
+  recBtn.innerHTML = "🎙️ Record";
+  recBtn.disabled = false;
+  stopBtn.disabled = true;
+  stopBtn.style.display = "none";
+  recStatus.classList.remove("on");
+});
+
+// ---------- FILE UPLOAD ----------
+audioUpload.addEventListener("change", () => {
+  const file = audioUpload.files[0];
+  if (!file) return;
+  recStatus.classList.add("on");
+  recStatusTxt.textContent = `Transcribing: ${file.name}…`;
+  resultsEl.innerHTML = "";
+  transcriptEl.value = "";
+  sendForTranscription(file);
+  audioUpload.value = "";
+});
+
+// ---------- TRANSCRIBE ----------
+async function sendForTranscription(blob) {
+  recStatus.classList.add("on");
+  recStatusTxt.textContent = "Transcribing — this may take a few seconds…";
+  const form = new FormData();
+  form.append("audio", blob, "recording.webm");
+  try {
+    const res = await fetch("/api/transcribe", { method: "POST", body: form });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: "Server error" }));
+      throw new Error(err.error || "Transcription failed");
+    }
+    renderResults(await res.json());
+  } catch (e) {
+    recStatusTxt.textContent = `Error: ${e.message}`;
+  }
+}
+
+// ---------- RENDER ----------
+function renderResults(data) {
+  lastSegments = data.segments || [];
+  resultsEl.innerHTML = "";
+  if (!lastSegments.length) {
+    recStatusTxt.textContent = "No speech detected — try speaking louder or closer to the mic.";
+    return;
+  }
+  recStatusTxt.textContent = `Done — ${data.language} · ${data.duration}s · ${lastSegments.length} segments`;
+
+  lastSegments.forEach((seg, i) => {
+    const div = document.createElement("div");
+    div.className = "segment";
+
+    const ts = document.createElement("div");
+    ts.className = "ts-badge";
+    ts.innerHTML = `${fmtTime(seg.start)} <span class="arrow">→</span> ${fmtTime(seg.end)}`;
+
+    const text = document.createElement("div");
+    text.className = "seg-text";
+    if (seg.words && seg.words.length) {
+      seg.words.forEach(w => {
+        const span = document.createElement("span");
+        span.className = "word";
+        span.textContent = w.word;
+        span.title = `${fmtTime(w.start)} – ${fmtTime(w.end)}`;
+        text.appendChild(span);
+        text.appendChild(document.createTextNode(" "));
+      });
+    } else {
+      text.textContent = seg.text;
+    }
+    div.appendChild(ts);
+    div.appendChild(text);
+    resultsEl.appendChild(div);
+  });
+
+  transcriptEl.value = data.text;
+  sttInfoEl.textContent = `${lastSegments.length} segments · ${data.language} · ${data.duration}s audio`;
+  copyBtn.disabled = false;
+  dlTxtBtn.disabled = false;
+  dlSrtBtn.disabled = false;
+}
+
+function fmtTime(s) {
+  const m = Math.floor(s / 60);
+  return `${String(m).padStart(2,"0")}:${(s%60).toFixed(1).padStart(4,"0")}`;
+}
+
+// ---------- COPY WITH TIMESTAMPS ----------
+copyBtn.addEventListener("click", () => {
+  const txt = lastSegments.map(s =>
+    `[${fmtTime(s.start)} → ${fmtTime(s.end)}]  ${s.text}`
+  ).join("\n");
+  navigator.clipboard.writeText(txt).then(() => {
+    copyBtn.innerHTML = "✅ Copied!";
+    setTimeout(() => { copyBtn.innerHTML = "📋 Copy + Timestamps"; }, 1500);
+  });
+});
+
+// ---------- DOWNLOAD .TXT ----------
+dlTxtBtn.addEventListener("click", () => {
+  const txt = lastSegments.map(s =>
+    `[${fmtTime(s.start)} → ${fmtTime(s.end)}]  ${s.text}`
+  ).join("\n");
+  downloadFile(txt, "transcript.txt", "text/plain");
+});
+
+// ---------- DOWNLOAD .SRT ----------
+dlSrtBtn.addEventListener("click", () => {
+  let srt = "";
+  lastSegments.forEach((s, i) => {
+    srt += `${i+1}\n${srtTime(s.start)} --> ${srtTime(s.end)}\n${s.text}\n\n`;
+  });
+  downloadFile(srt, "transcript.srt", "text/plain");
+});
+
+function srtTime(s) {
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+  return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${sec.toFixed(3).padStart(6,"0").replace(".",",")}`;
+}
+
+function downloadFile(c, n, t) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([c], {type:t}));
+  a.download = n; a.click(); URL.revokeObjectURL(a.href);
+}
+
+// ==================== BOOT ====================
+updateRate();
+updatePitch();
+loadVoices();
+</script>
+</body>
+</html>
