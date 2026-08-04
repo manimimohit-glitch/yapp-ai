@@ -29,9 +29,6 @@ from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-# Register bundled ffmpeg so faster-whisper can find it.
-static_ffmpeg.add_paths()
-
 STATIC_DIR = Path(__file__).parent / "static"
 
 app = FastAPI(title="Yapp.ai", description="Free neural speech and voice AI — no cap")
@@ -122,9 +119,18 @@ _whisper_model = None
 
 
 def _get_whisper():
-    """Lazy-load the Whisper model on first transcription request."""
+    """Lazy-load the Whisper model on first transcription request.
+
+    This (and the ffmpeg binary it needs) is intentionally NOT loaded at
+    import time. On Render's free tier the disk is wiped on every cold
+    start, so static-ffmpeg would re-download its ~80MB binary before the
+    app could even boot. Keeping it lazy means the page and TTS serve
+    instantly; only the first STT call pays the download.
+    """
     global _whisper_model
     if _whisper_model is None:
+        # Register bundled ffmpeg so faster-whisper can find it.
+        static_ffmpeg.add_paths()
         from faster_whisper import WhisperModel
         _whisper_model = WhisperModel("base", device="cpu", compute_type="int8")
     return _whisper_model
