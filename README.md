@@ -104,6 +104,23 @@ Why a backend? The neural voices need Python's edge-tts to call
 Microsoft. A backend also makes it a real full-stack app (FastAPI serving
 a page + JSON API + audio streaming) — exactly the pattern from PaperIQ.
 
+## 🧪 Tests
+
+Smoke tests for the server — pages, health check, TTS validation, and the
+voice-list cache:
+
+```bash
+# One-time setup
+.venv/Scripts/python -m pip install -r requirements-dev.txt
+
+# Run the tests
+.venv/Scripts/python -m pytest tests/ -v
+```
+
+The tests avoid the network: TTS is tested with empty text (rejected
+*before* calling Microsoft) and `/api/voices` uses a mocked edge-tts, so
+they run fast and reliably anywhere.
+
 ## Ideas to take it further (pick one!)
 
 - **Play the audio without opening a player** — use `pygame` or `playsound`.

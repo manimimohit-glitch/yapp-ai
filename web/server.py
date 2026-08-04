@@ -19,6 +19,7 @@ ENDPOINTS
 
 import os
 import tempfile
+import time
 from pathlib import Path
 
 import edge_tts
@@ -70,12 +71,27 @@ async def healthz():
     return {"status": "ok"}
 
 
+# The voice list is cached so the picker doesn't call Microsoft on every
+# page load. Voices change rarely, so a 6-hour refresh is plenty.
+_voices_cache = None
+_voices_cached_at = 0.0
+_VOICES_TTL = 6 * 60 * 60  # seconds
+
+
 @app.get("/api/voices")
 async def list_voices():
-    """All voices for the curated locales, so the picker can group them."""
-    all_voices = await edge_tts.list_voices()
-    curated = [v for v in all_voices if v["Locale"] in CURATED_LOCALES]
-    return curated
+    """All voices for the curated locales, so the picker can group them.
+
+    Cached server-side: the first request fetches from Microsoft, then the
+    picker is instant for the next 6 hours (no network call each load).
+    """
+    global _voices_cache, _voices_cached_at
+    now = time.time()
+    if _voices_cache is None or now - _voices_cached_at > _VOICES_TTL:
+        all_voices = await edge_tts.list_voices()
+        _voices_cache = [v for v in all_voices if v["Locale"] in CURATED_LOCALES]
+        _voices_cached_at = now
+    return _voices_cache
 
 
 @app.post("/api/tts")

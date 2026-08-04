@@ -1,0 +1,5 @@
+# Local development only — Render installs requirements.txt, not this.
+# Install once, then run tests:  .venv/Scripts/python -m pytest tests/ -v
+-r requirements.txt
+httpx
+pytest
