@@ -10,6 +10,8 @@ Then open http://127.0.0.1:8000 in your browser.
 
 ENDPOINTS
     GET  /               -> the website (index.html)
+    GET  /privacy        -> the privacy & data-handling page (privacy.html)
+    GET  /healthz        -> lightweight health check for Render
     GET  /api/voices     -> JSON list of available voices (curated locales)
     POST /api/tts        -> {text, voice, rate, pitch} -> MP3 audio stream
     POST /api/transcribe -> audio file -> JSON with timestamps
@@ -54,6 +56,18 @@ def _sign(value: str) -> str:
 async def index():
     """The website itself."""
     return FileResponse(STATIC_DIR / "index.html")
+
+
+@app.get("/privacy")
+async def privacy():
+    """The privacy & data-handling page."""
+    return FileResponse(STATIC_DIR / "privacy.html")
+
+
+@app.get("/healthz")
+async def healthz():
+    """Lightweight health check so Render can verify the app is up."""
+    return {"status": "ok"}
 
 
 @app.get("/api/voices")

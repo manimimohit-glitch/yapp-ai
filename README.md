@@ -91,9 +91,14 @@ Files:
 
 ```
 web/
-├── server.py          ← FastAPI backend (page + /api/tts + /api/voices)
-└── static/index.html  ← the whole neo-brutalist frontend, no build step
+├── server.py          ← FastAPI backend (/ + /privacy + /healthz + /api/tts + /api/voices)
+└── static/
+    ├── index.html     ← the whole neo-brutalist frontend, no build step
+    └── privacy.html   ← privacy & data-handling page (linked from the footer)
 ```
+
+There's also a `/healthz` health check wired into `render.yaml`, so Render
+stops serving a dead instance automatically.
 
 Why a backend? The neural voices need Python's edge-tts to call
 Microsoft. A backend also makes it a real full-stack app (FastAPI serving

@@ -93,26 +93,33 @@
   .deco.star { color: var(--pink); top: -10px; right: -20px; transform: rotate(15deg); }
   .deco.plus { color: var(--blue); bottom: 50%; left: -30px; transform: rotate(-10deg); }
 
-  /* ==================== MARQUEE ==================== */
-  .marquee {
+  /* ==================== TRUST BAR (static — no scrolling) ==================== */
+  .trust-line {
     margin: 28px 0;
     border: 3px solid var(--black);
-    overflow: hidden;
-    white-space: nowrap;
-    box-shadow: 6px 6px 0 var(--black);
-    position: relative;
-  }
-  .marquee .track {
-    display: inline-block;
-    padding: 10px 0;
+    background: var(--yellow);
+    padding: 13px 18px;
     font-family: 'Archivo Black', sans-serif;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    animation: slide 20s linear infinite;
+    font-size: 0.8rem;
+    box-shadow: 6px 6px 0 var(--black);
+    display: flex; align-items: center; justify-content: center;
+    flex-wrap: wrap; gap: 10px; text-align: center;
   }
-  .marquee.yellow .track { background: var(--yellow); color: var(--black); font-size: 0.9rem; }
-  .marquee.dark .track   { background: var(--black); color: var(--yellow); font-size: 0.8rem; }
-  @keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .trust-line .sep { opacity: 0.35; }
+
+  /* ==================== NOTES (privacy + cold start) ==================== */
+  .data-note {
+    margin-top: 14px; font-size: 0.78rem; font-weight: 600;
+    color: #333; padding: 10px 14px; background: var(--cream);
+    border: 2px dashed var(--black);
+  }
+  .data-note a { color: var(--blue); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+  .cold-note {
+    margin-top: 10px; font-size: 0.72rem; font-weight: 600;
+    color: #777; text-transform: uppercase; letter-spacing: 1px;
+  }
 
   /* ==================== SECTION LABELS ==================== */
   .section-label {
@@ -461,23 +468,24 @@
     <div class="logo">⚡ yap.ai</div>
     <div class="headline">
       <h1>text<span class="arrow">↔</span>voice<br />AI&nbsp;studio</h1>
-      <div class="sub">Type to speak · Speak to type · No cap, it's free</div>
+      <div class="sub">Neural text-to-speech &amp; speech-to-text — free, no sign-up</div>
     </div>
   </header>
 
   <div class="badges">
-    <span class="sticker yellow">🔥 100% Free</span>
-    <span class="sticker blue">🧠 Neural Voices</span>
-    <span class="sticker green">✅ No API Key</span>
-    <span class="sticker pink">⚡ No Sign-Up</span>
-    <span class="sticker purple">🔒 Runs Locally</span>
+    <span class="sticker yellow">100% Free</span>
+    <span class="sticker blue">Neural Voices</span>
+    <span class="sticker green">No API Key</span>
+    <span class="sticker pink">No Sign-Up</span>
+    <span class="sticker purple">🌐 Free Hosting</span>
   </div>
 
-  <!-- MARQUEE -->
-  <div class="marquee yellow">
-    <div class="track">
-      ★ TYPE YOUR SCRIPT ★ PICK A VOICE ★ HEAR AI SPEAK ★ RECORD YOUR VOICE ★ GET TIMESTAMPS ★ COPY · DOWNLOAD · SUBTITLE ★ TYPE YOUR SCRIPT ★ PICK A VOICE ★ HEAR AI SPEAK ★ RECORD YOUR VOICE ★ GET TIMESTAMPS ★ COPY · DOWNLOAD · SUBTITLE ★
-    </div>
+  <!-- TRUST BAR (static) -->
+  <div class="trust-line">
+    <span>Type your script</span><span class="sep">·</span>
+    <span>Pick a voice</span><span class="sep">·</span>
+    <span>Hear AI speak</span><span class="sep">·</span>
+    <span>Record &amp; get timestamps</span>
   </div>
 
   <!-- ==================== TEXT → VOICE ==================== -->
@@ -491,7 +499,7 @@
   <div class="main-grid">
     <section class="card" style="grid-column: 1 / -1;">
       <div class="card-head">
-        <span>📝 Your Script</span>
+        <span>Your Script</span>
         <span class="tag">Type it</span>
       </div>
       <div class="body">
@@ -504,7 +512,7 @@
 
     <section class="card">
       <div class="card-head">
-        <span>🎙️ Pick a Voice</span>
+        <span>Pick a Voice</span>
         <span class="tag">♂♀</span>
       </div>
       <div class="body">
@@ -515,20 +523,20 @@
 
     <section class="card">
       <div class="card-head">
-        <span>🎚️ Speed & Pitch</span>
+        <span>Speed &amp; Pitch</span>
         <span class="tag">Tweak</span>
       </div>
       <div class="body">
         <div class="slider-row">
           <div class="label">
-            <span>⚡ Speed</span>
+            <span>Speed</span>
             <output id="rateout">+0%</output>
           </div>
           <input type="range" id="rate" min="-50" max="50" value="0" />
         </div>
         <div class="slider-row">
           <div class="label">
-            <span>🎵 Pitch</span>
+            <span>Pitch</span>
             <output id="pitchout">+0Hz</output>
           </div>
           <input type="range" id="pitch" min="-50" max="50" value="0" />
@@ -564,7 +572,7 @@
 
   <section class="card stt-card">
     <div class="card-head">
-      <span>🎤 Record or Upload</span>
+      <span>Record or Upload</span>
       <span class="tag">Timestamps</span>
     </div>
     <div class="body">
@@ -573,6 +581,17 @@
         <button class="stop-btn" id="stopBtn" style="display:none;">⏹ Stop</button>
         <label class="upload-label" for="audioUpload">📁 Upload Audio</label>
         <input type="file" id="audioUpload" accept="audio/*" hidden />
+      </div>
+
+      <!-- Privacy + reliability honesty. Nothing here is stored: the server
+           writes your audio to a temp file, transcribes it, and deletes it
+           immediately — see /privacy for the full picture. -->
+      <div class="data-note">
+        Your audio is processed on the server and <b>deleted immediately</b> — never stored.
+        <a href="/privacy">Privacy &amp; data handling</a>.
+      </div>
+      <div class="cold-note">
+        Note: first request can take 30–60s — free hosting cold start.
       </div>
 
       <div class="rec-status" id="recStatus">
@@ -595,17 +614,10 @@
     </div>
   </section>
 
-  <!-- FOOTER MARQUEE -->
-  <div class="marquee dark" style="margin-top: 36px;">
-    <div class="track">
-      ⚡ EDGE-TTS NEURAL VOICES ⚡ WHISPER SPEECH RECOGNITION ⚡ WORD-LEVEL TIMESTAMPS ⚡ FULLY LOCAL & FREE ⚡ EDGE-TTS NEURAL VOICES ⚡ WHISPER SPEECH RECOGNITION ⚡ WORD-LEVEL TIMESTAMPS ⚡ FULLY LOCAL & FREE ⚡
-    </div>
-  </div>
-
   <!-- FOOTER -->
   <div class="footer-bar">
-    <span>Made by Mohit · ⚡ Yapp.ai — free forever, no cap</span>
-    <span>Christopher · Whisper · Word Timestamps</span>
+    <span>Made by Mohit · <a href="/privacy">Privacy &amp; data handling</a> · © <span id="year"></span></span>
+    <span>Yapp.ai — free text &amp; voice AI · Christopher · Whisper · Word Timestamps</span>
   </div>
 
 </div>
@@ -908,6 +920,7 @@ function downloadFile(c, n, t) {
 updateRate();
 updatePitch();
 loadVoices();
+document.getElementById("year").textContent = new Date().getFullYear();
 </script>
 </body>
 </html>

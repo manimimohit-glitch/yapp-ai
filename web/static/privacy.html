@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Yapp.ai — Privacy &amp; Data Handling</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* Trimmed copy of index.html's CSS — keep the :root tokens in sync when you restyle. */
+  :root {
+    --black: #111111;
+    --cream: #fdf6e3;
+    --white: #ffffff;
+    --yellow: #ffd400;
+    --blue: #2d6ff2;
+    --pink: #ff4d6d;
+    --green: #00c853;
+    --purple: #7b2ff7;
+    --orange: #ff6d00;
+    --grid: rgba(17, 17, 17, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    color: var(--black);
+    background-color: var(--cream);
+    background-image:
+      linear-gradient(var(--grid) 1.5px, transparent 1.5px),
+      linear-gradient(90deg, var(--grid) 1.5px, transparent 1.5px);
+    background-size: 32px 32px;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3 { font-family: 'Archivo Black', sans-serif; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 32px 24px 60px; }
+
+  .back-link {
+    display: inline-block;
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--black); text-decoration: none;
+    border: 3px solid var(--black); background: var(--white);
+    padding: 10px 16px; box-shadow: 4px 4px 0 var(--black);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+  }
+  .back-link:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--black); }
+  .back-link:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--black); }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    text-transform: uppercase; letter-spacing: -1px;
+    margin: 24px 0 8px;
+  }
+  .updated {
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: #666; margin-bottom: 24px;
+  }
+
+  .summary {
+    border: 3px solid var(--black); background: var(--yellow);
+    box-shadow: 6px 6px 0 var(--black);
+    padding: 16px 18px; margin-bottom: 28px;
+    font-weight: 600; line-height: 1.6;
+  }
+
+  section {
+    background: var(--white);
+    border: 3px solid var(--black);
+    box-shadow: 6px 6px 0 var(--black);
+    padding: 20px 22px; margin-bottom: 22px;
+  }
+  section h2 {
+    font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1.5px;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  section h2 .tick {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; min-width: 24px;
+    background: var(--green); color: #fff;
+    border: 2px solid var(--black); font-size: 0.7rem;
+  }
+  section h2 .tick.neutral { background: var(--blue); }
+  section p { line-height: 1.7; font-size: 0.95rem; }
+  section p + p { margin-top: 10px; }
+  section b { font-weight: 700; }
+
+  ul { list-style: none; margin-top: 12px; }
+  ul li {
+    padding: 10px 14px; border: 2px dashed var(--black);
+    background: var(--cream); margin-bottom: 10px;
+    font-size: 0.9rem; line-height: 1.6;
+  }
+  ul li b { font-family: 'Archivo Black', sans-serif; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
+
+  .foot {
+    margin-top: 8px; font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; color: #666;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  }
+  .foot a { color: var(--blue); }
+
+  @media (max-width: 600px) {
+    .wrap { padding: 20px 14px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <a class="back-link" href="/">← Back to the app</a>
+
+  <h1>Privacy &amp; Data</h1>
+  <div class="updated">Last updated: August 4, 2026 · Yapp.ai</div>
+
+  <div class="summary">
+    The short version: we don't create accounts, we don't ask for personal
+    info, and we don't keep your audio or your text. Both tools process data
+    on the fly and then discard it.
+  </div>
+
+  <section>
+    <h2><span class="tick">✔</span> What we collect</h2>
+    <p>Nothing personally identifiable. Yapp.ai has <b>no accounts, no sign-up,
+    and no tracking cookies</b>. It doesn't run analytics scripts. Server logs
+    keep only routine technical details (like request timestamps and sizes)
+    that are needed to keep the service running.</p>
+  </section>
+
+  <section>
+    <h2><span class="tick neutral">▶</span> Text → Voice (your text)</h2>
+    <p>When you type text and press <b>Speak It</b>, the text is sent to
+    Microsoft's free neural-voice endpoint (via the edge-tts library) to
+    generate the speech, and the MP3 streams back to your browser.</p>
+    <p>Your text is used to create your audio and is <b>not stored or logged</b>.</p>
+  </section>
+
+  <section>
+    <h2><span class="tick neutral">◉</span> Voice → Text (your audio)</h2>
+    <p>When you record or upload audio, the file is sent to our server, where
+    a Whisper model running on the server's CPU transcribes it. The file is
+    written to a temporary location, processed, and then <b>deleted
+    immediately — even if an error occurs</b>.</p>
+    <p>Yapp.ai does not store, save, or share your recordings. Any transcript
+    downloads (.txt / .srt) are generated in your browser from the returned
+    text.</p>
+  </section>
+
+  <section>
+    <h2><span class="tick neutral">≡</span> Hosting &amp; uptime (the honest part)</h2>
+    <p>Yapp.ai runs on Render's <b>free tier</b>. That keeps it free for you,
+    but it comes with real limitations:</p>
+    <ul>
+      <li><b>Cold starts</b> — the instance sleeps after about 15 minutes of
+        inactivity, so the first request after a pause can take 30–60 seconds
+        to respond while it wakes up.</li>
+      <li><b>No uptime guarantee</b> — free hosting can be slow or briefly
+        unavailable, especially at busy times.</li>
+      <li><b>First transcription is slowest</b> — the speech-to-text model
+        loads on its first use, which adds extra delay on top of a cold start.</li>
+    </ul>
+    <p>Please don't rely on this for anything time-critical.</p>
+  </section>
+
+  <section>
+    <h2><span class="tick neutral">≈</span> Rate limits</h2>
+    <p>There are no hard limits today, and we only ask for fair use. Very long
+    recordings take longer to transcribe because speech-to-text runs on a
+    small CPU-only model. If you hit an error, waiting a moment and retrying
+    usually fixes it.</p>
+  </section>
+
+  <section>
+    <h2><span class="tick neutral">⚡</span> About &amp; contact</h2>
+    <p>Yapp.ai is a student project built by Mohit to learn AI engineering.
+    The source is public.</p>
+    <p>This page may change as the app grows — the date above shows the last
+    update.</p>
+  </section>
+
+  <div class="foot">
+    <a href="/">← Back to the app</a>
+    <span>Yapp.ai — free text &amp; voice AI</span>
+  </div>
+
+</div>
+</body>
+</html>
