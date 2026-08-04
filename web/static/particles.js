@@ -127,10 +127,7 @@
 
   /* ---- theme ---- */
   function themeColors() {
-    var dark = document.documentElement.dataset.theme === 'dark';
-    return dark
-      ? { colors: ['#ffffff', '#b18cff'] }
-      : { colors: ['#171a26', '#8b5cf6'] };
+    return { colors: ['#ffffff'] };
   }
 
   /* ---- engine ---- */
