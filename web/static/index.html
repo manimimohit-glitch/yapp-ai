@@ -116,6 +116,23 @@
   @keyframes drift3 { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(40px,-50px,0) scale(1.1); } }
   @keyframes drift4 { from { transform: translate3d(0,0,0) scale(1.1); } to { transform: translate3d(-40px,30px,0) scale(1); } }
 
+  /* ---- swarm overlay ---- */
+  #swarm { position: fixed; inset: 0; z-index: 40; pointer-events: none; }
+
+  /* ---- 3D particles background (CSS aurora is the fallback) ---- */
+  #particles { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+  body.has-particles .bg-orbs { display: none; }
+
+  /* ---- warp-text heading (WebGL2) ---- */
+  .headline-main { position: relative; }
+  .warp-heading {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .warp-heading canvas { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
+  body.has-warp h1#h1-heading { opacity: 0; pointer-events: none; }
+
   /* ==================== HEADER ==================== */
   header { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; position: relative; }
 
@@ -571,10 +588,15 @@
     }
   })();
 </script>
+<script src="/static/particles.js" defer></script>
+<script src="/static/warp.js" defer></script>
+<script src="/static/swarm.js" defer></script>
 </head>
 <body>
 
 <div class="bg-orbs" aria-hidden="true"><i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i><i class="orb o4"></i></div>
+<div id="particles" aria-hidden="true"></div>
+<div id="swarm" aria-hidden="true"></div>
 
 <div class="deco star">✦</div>
 <div class="deco plus">✚</div>
@@ -585,7 +607,10 @@
   <header>
     <div class="logo"><span class="bolt">⚡</span> yap.ai</div>
     <div class="headline">
-      <h1>text<span class="arrow">↔</span>voice<br />AI&nbsp;studio</h1>
+      <div class="headline-main">
+        <h1 id="h1-heading">text<span class="arrow">↔</span>voice<br />AI&nbsp;studio</h1>
+        <div id="warp-heading" class="warp-heading" aria-hidden="true"></div>
+      </div>
       <div class="sub">Neural text-to-speech &amp; speech-to-text — free, no sign-up</div>
     </div>
     <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">🌙</button>
@@ -1048,6 +1073,9 @@ themeToggle.addEventListener("click", () => {
   root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
   try { localStorage.setItem("yap-theme", root.dataset.theme); } catch (e) {}
   syncThemeIcon();
+  if (window.Particles && Particles.instance) Particles.instance.applyTheme();
+  if (window.WarpText && WarpText.instance) WarpText.instance.applyTheme();
+  if (window.SwarmCursor && SwarmCursor.instance) SwarmCursor.instance.applyTheme();
 });
 
 // ==================== BOOT ====================
