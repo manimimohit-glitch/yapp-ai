@@ -9,18 +9,85 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
 <style>
+  /* ---- Design tokens ----
+     The light values below are the default (cream neo-brutalist look).
+     The [data-theme="dark"] block remaps the SAME variables, so the whole
+     page flips to a dark-studio look without touching any rule below. */
   :root {
-    --black: #111111;
-    --cream: #fdf6e3;
-    --white: #ffffff;
+    /* base surfaces & ink */
+    --black: #111111;      /* text + borders (becomes light ink in dark) */
+    --cream: #fdf6e3;      /* page background */
+    --white: #ffffff;      /* card / surface background */
+    --grid: rgba(17, 17, 17, 0.08);
+    --inverse: #111111;    /* always-dark chip/button surface */
+
+    /* brand accents */
     --yellow: #ffd400;
     --blue: #2d6ff2;
     --pink: #ff4d6d;
     --green: #00c853;
     --purple: #7b2ff7;
     --orange: #ff6d00;
-    --grid: rgba(17, 17, 17, 0.08);
+    --danger: #ff0000;     /* recording red */
+
+    /* text shades (separate tokens so dark mode can brighten them) */
+    --muted: #555;
+    --muted-strong: #333;
+    --muted-2: #666;
+    --note-muted: #777;
+    --placeholder: #999;
+    --eq-idle: #ccc;
+
+    /* shadows: light mode = hard neo-brutalist offset */
+    --shadow-ink: #111111;
+
+    color-scheme: light;
   }
+
+  [data-theme="dark"] {
+    --black: #f2efeb;                  /* light ink + borders */
+    --cream: #141418;                  /* deep charcoal page */
+    --white: #1c1c22;                  /* dark panels */
+    --grid: rgba(255, 255, 255, 0.05);
+    --inverse: #0e0e11;
+
+    --yellow: #ffd400;                 /* accents tuned for dark */
+    --blue: #4d8bff;
+    --pink: #ff5c78;
+    --green: #2bd47c;
+    --purple: #a06bff;
+    --orange: #ff8433;
+
+    --muted: #a3a3aa;
+    --muted-strong: #c8c8cd;
+    --muted-2: #8f8f96;
+    --note-muted: #8a8a92;
+    --placeholder: #6b6b73;
+    --eq-idle: #2a2a32;
+
+    --shadow-ink: rgba(0, 0, 0, 0.45); /* soft depth, no glow */
+    color-scheme: dark;
+  }
+
+  /* Dark studio = thinner borders (3px -> 1px). The universal rule wins on
+     specificity: html[data-theme] + * beats any single-class rule. */
+  html[data-theme="dark"] * { border-width: 1px; }
+  html[data-theme="dark"] .logo,
+  html[data-theme="dark"] .sticker { border-width: 2px; }
+
+  /* Dark-only refinements: keep the always-dark surfaces dark, and keep
+     dark text on the bright yellow chips (yellow + light text = no contrast). */
+  [data-theme="dark"] .logo,
+  [data-theme="dark"] .section-label .icon,
+  [data-theme="dark"] .slider-row output,
+  [data-theme="dark"] .stop-btn,
+  [data-theme="dark"] .footer-bar {
+    background: var(--inverse);
+  }
+  [data-theme="dark"] :is(.trust-line, .ts-badge, .sticker.yellow, .btn.speak, .srt-btn, select) {
+    color: #111;
+  }
+  [data-theme="dark"] .word:hover { color: #111; }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -68,9 +135,23 @@
   .headline h1 .arrow { color: var(--pink); display: inline-block; }
   .headline .sub {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 0.95rem; font-weight: 600; color: #555;
+    font-size: 0.95rem; font-weight: 600; color: var(--muted);
     margin-top: 8px; letter-spacing: 1px; text-transform: uppercase;
   }
+
+  /* light/dark toggle */
+  .theme-toggle {
+    margin-left: auto;
+    width: 46px; height: 46px;
+    background: var(--white); color: var(--black);
+    border: 3px solid var(--black);
+    box-shadow: 4px 4px 0 var(--shadow-ink);
+    font-size: 1.2rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+  }
+  .theme-toggle:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--shadow-ink); }
+  .theme-toggle:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--shadow-ink); }
 
   .badges { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
   .sticker {
@@ -78,7 +159,7 @@
     border: 3px solid var(--black); padding: 6px 14px;
     font-family: 'Archivo Black', sans-serif;
     font-size: 0.72rem; text-transform: uppercase;
-    box-shadow: 4px 4px 0 var(--black);
+    box-shadow: 4px 4px 0 var(--shadow-ink);
     letter-spacing: 0.5px;
   }
   .sticker.yellow { background: var(--yellow); }
@@ -103,7 +184,7 @@
     text-transform: uppercase;
     letter-spacing: 1.5px;
     font-size: 0.8rem;
-    box-shadow: 6px 6px 0 var(--black);
+    box-shadow: 6px 6px 0 var(--shadow-ink);
     display: flex; align-items: center; justify-content: center;
     flex-wrap: wrap; gap: 10px; text-align: center;
   }
@@ -112,13 +193,13 @@
   /* ==================== NOTES (privacy + cold start) ==================== */
   .data-note {
     margin-top: 14px; font-size: 0.78rem; font-weight: 600;
-    color: #333; padding: 10px 14px; background: var(--cream);
+    color: var(--muted-strong); padding: 10px 14px; background: var(--cream);
     border: 2px dashed var(--black);
   }
   .data-note a { color: var(--blue); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
   .cold-note {
     margin-top: 10px; font-size: 0.72rem; font-weight: 600;
-    color: #777; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--note-muted); text-transform: uppercase; letter-spacing: 1px;
   }
 
   /* ==================== SECTION LABELS ==================== */
@@ -142,7 +223,7 @@
   .card {
     background: var(--white);
     border: 3px solid var(--black);
-    box-shadow: 7px 7px 0 var(--black);
+    box-shadow: 7px 7px 0 var(--shadow-ink);
     position: relative;
   }
   .card::before {
@@ -164,7 +245,7 @@
   .card-head .tag {
     font-family: 'Space Grotesk', sans-serif; font-size: 0.65rem;
     border: 2px solid var(--black); padding: 3px 10px;
-    box-shadow: 2px 2px 0 var(--black);
+    box-shadow: 2px 2px 0 var(--shadow-ink);
     text-transform: uppercase; letter-spacing: 1px; font-weight: 700;
   }
   .card .body { padding: 20px; }
@@ -186,10 +267,10 @@
     outline: none; transition: box-shadow 0.15s;
   }
   textarea:focus { box-shadow: 5px 5px 0 var(--yellow); }
-  textarea::placeholder { color: #999; }
+  textarea::placeholder { color: var(--placeholder); }
   .count {
     margin-top: 12px; font-size: 0.78rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 1.5px; color: #666;
+    text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted-2);
   }
   .count b { color: var(--black); }
 
@@ -200,15 +281,15 @@
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700; font-size: 0.95rem;
     background: var(--yellow); color: var(--black);
-    box-shadow: 4px 4px 0 var(--black);
+    box-shadow: 4px 4px 0 var(--shadow-ink);
     outline: none; cursor: pointer;
     transition: box-shadow 0.15s, transform 0.1s;
   }
-  select:hover { transform: translate(-1px,-1px); box-shadow: 5px 5px 0 var(--black); }
+  select:hover { transform: translate(-1px,-1px); box-shadow: 5px 5px 0 var(--shadow-ink); }
   select:focus { box-shadow: 4px 4px 0 var(--blue); }
   .voice-note {
     margin-top: 12px; font-size: 0.78rem; font-weight: 600;
-    color: #555; padding: 8px 12px; background: var(--cream);
+    color: var(--muted); padding: 8px 12px; background: var(--cream);
     border: 2px dashed var(--black);
   }
 
@@ -231,14 +312,14 @@
     width: 100%; height: 16px;
     border: 3px solid var(--black);
     background: var(--cream);
-    box-shadow: 3px 3px 0 var(--black);
+    box-shadow: 3px 3px 0 var(--shadow-ink);
     cursor: pointer;
   }
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none; appearance: none;
     width: 28px; height: 28px;
     background: var(--yellow); border: 3px solid var(--black);
-    box-shadow: 3px 3px 0 var(--black);
+    box-shadow: 3px 3px 0 var(--shadow-ink);
     transition: transform 0.1s;
   }
   input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
@@ -253,15 +334,15 @@
     font-family: 'Archivo Black', sans-serif;
     text-transform: uppercase; font-size: 1rem; letter-spacing: 1px;
     border: 3px solid var(--black);
-    box-shadow: 6px 6px 0 var(--black);
+    box-shadow: 6px 6px 0 var(--shadow-ink);
     padding: 16px 24px; cursor: pointer;
     transition: transform 0.08s ease, box-shadow 0.08s ease;
     color: var(--black); display: inline-flex; align-items: center; gap: 6px;
     white-space: nowrap;
   }
-  .btn:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--black); }
-  .btn:active { transform: translate(4px, 4px); box-shadow: 1px 1px 0 var(--black); }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: 4px 4px 0 var(--black) !important; }
+  .btn:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--shadow-ink); }
+  .btn:active { transform: translate(4px, 4px); box-shadow: 1px 1px 0 var(--shadow-ink); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: 4px 4px 0 var(--shadow-ink) !important; }
   .btn.speak  { background: var(--yellow); flex: 2; font-size: 1.15rem; }
   .btn.download { background: var(--blue); color: #fff; flex: 1; }
   .btn.speak .icon { font-size: 1.3rem; }
@@ -277,7 +358,7 @@
     font-size: 0.8rem;
     display: flex; align-items: center; gap: 14px;
     background: var(--white);
-    box-shadow: 4px 4px 0 var(--black);
+    box-shadow: 4px 4px 0 var(--shadow-ink);
   }
   .status .dot {
     width: 14px; height: 14px; min-width: 14px;
@@ -290,13 +371,13 @@
 
   audio {
     width: 100%; margin-top: 18px;
-    border: 3px solid var(--black); box-shadow: 5px 5px 0 var(--black);
+    border: 3px solid var(--black); box-shadow: 5px 5px 0 var(--shadow-ink);
     height: 48px; background: var(--cream);
   }
 
   /* ==================== EQ BARS ==================== */
   .eq { display: flex; align-items: flex-end; gap: 4px; height: 28px; }
-  .eq span { width: 7px; height: 8px; background: #ccc; border: 2px solid var(--black); }
+  .eq span { width: 7px; height: 8px; background: var(--eq-idle); border: 2px solid var(--black); }
   .eq.live span { background: var(--green); animation: bounce 0.6s infinite alternate; }
   .eq.live span:nth-child(2) { animation-delay: 0.1s; }
   .eq.live span:nth-child(3) { animation-delay: 0.2s; }
@@ -312,19 +393,19 @@
     background: var(--pink); color: #fff;
     font-family: 'Archivo Black', sans-serif;
     text-transform: uppercase; font-size: 1.1rem; letter-spacing: 1px;
-    border: 3px solid var(--black); box-shadow: 6px 6px 0 var(--black);
+    border: 3px solid var(--black); box-shadow: 6px 6px 0 var(--shadow-ink);
     padding: 18px 28px; cursor: pointer;
     transition: transform 0.08s ease, box-shadow 0.08s ease;
     display: flex; align-items: center; gap: 8px;
   }
-  .rec-btn:hover { transform: translate(-2px,-2px); box-shadow: 8px 8px 0 var(--black); }
-  .rec-btn:active { transform: translate(4px,4px); box-shadow: 1px 1px 0 var(--black); }
+  .rec-btn:hover { transform: translate(-2px,-2px); box-shadow: 8px 8px 0 var(--shadow-ink); }
+  .rec-btn:active { transform: translate(4px,4px); box-shadow: 1px 1px 0 var(--shadow-ink); }
   .rec-btn.recording {
     background: #ff0000;
     animation: rec-pulse 0.6s infinite alternate;
   }
   @keyframes rec-pulse {
-    from { box-shadow: 6px 6px 0 var(--black); }
+    from { box-shadow: 6px 6px 0 var(--shadow-ink); }
     to   { box-shadow: 10px 10px 0 #ff0000; transform: scale(1.04); }
   }
   .rec-btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -345,20 +426,20 @@
     background: var(--purple); color: #fff;
     font-family: 'Archivo Black', sans-serif;
     text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;
-    border: 3px solid var(--black); box-shadow: 6px 6px 0 var(--black);
+    border: 3px solid var(--black); box-shadow: 6px 6px 0 var(--shadow-ink);
     padding: 18px 22px; cursor: pointer;
     transition: transform 0.08s ease, box-shadow 0.08s ease;
     display: flex; align-items: center; gap: 8px;
   }
-  .upload-label:hover { transform: translate(-2px,-2px); box-shadow: 8px 8px 0 var(--black); }
-  .upload-label:active { transform: translate(4px,4px); box-shadow: 1px 1px 0 var(--black); }
+  .upload-label:hover { transform: translate(-2px,-2px); box-shadow: 8px 8px 0 var(--shadow-ink); }
+  .upload-label:active { transform: translate(4px,4px); box-shadow: 1px 1px 0 var(--shadow-ink); }
 
   .rec-status {
     margin-top: 16px; padding: 12px 16px;
     border: 3px solid var(--black); background: var(--white);
     font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;
     display: none; align-items: center; gap: 12px;
-    box-shadow: 4px 4px 0 var(--black);
+    box-shadow: 4px 4px 0 var(--shadow-ink);
   }
   .rec-status.on { display: flex; }
   .rec-dot {
@@ -372,11 +453,11 @@
   .segment {
     border: 3px solid var(--black); padding: 14px 16px; margin-bottom: 12px;
     background: var(--cream);
-    box-shadow: 5px 5px 0 var(--black);
+    box-shadow: 5px 5px 0 var(--shadow-ink);
     position: relative;
     transition: transform 0.1s, box-shadow 0.1s;
   }
-  .segment:hover { transform: translate(-1px,-1px); box-shadow: 6px 6px 0 var(--black); }
+  .segment:hover { transform: translate(-1px,-1px); box-shadow: 6px 6px 0 var(--shadow-ink); }
   .segment::before {
     content: ""; position: absolute; left: 0; top: 0; bottom: 0;
     width: 5px; background: var(--yellow);
@@ -386,7 +467,7 @@
     display: inline-flex; align-items: center; gap: 6px;
     background: var(--yellow); border: 2px solid var(--black);
     padding: 3px 12px; font-family: 'Archivo Black', sans-serif;
-    font-size: 0.7rem; box-shadow: 2px 2px 0 var(--black);
+    font-size: 0.7rem; box-shadow: 2px 2px 0 var(--shadow-ink);
     margin-bottom: 8px; letter-spacing: 0.5px;
   }
   .ts-badge .arrow { color: var(--pink); font-size: 0.8rem; }
@@ -414,7 +495,7 @@
 
   .stt-info {
     margin-top: 12px; font-size: 0.75rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 1.5px; color: #666;
+    text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted-2);
     display: flex; align-items: center; gap: 8px;
   }
   .stt-info::before {
@@ -455,6 +536,17 @@
     .footer-bar { flex-direction: column; text-align: center; }
   }
 </style>
+<script>
+  // Apply the saved (or system) theme before first paint — avoids a flash.
+  (function () {
+    try { var saved = localStorage.getItem("yap-theme"); }
+    catch (e) { saved = null; }
+    var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (saved === "dark" || (!saved && prefersDark)) {
+      document.documentElement.dataset.theme = "dark";
+    }
+  })();
+</script>
 </head>
 <body>
 
@@ -470,6 +562,7 @@
       <h1>text<span class="arrow">↔</span>voice<br />AI&nbsp;studio</h1>
       <div class="sub">Neural text-to-speech &amp; speech-to-text — free, no sign-up</div>
     </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">🌙</button>
   </header>
 
   <div class="badges">
@@ -916,11 +1009,27 @@ function downloadFile(c, n, t) {
   a.download = n; a.click(); URL.revokeObjectURL(a.href);
 }
 
+// ==================== THEME TOGGLE ====================
+const themeToggle = document.getElementById("themeToggle");
+
+function syncThemeIcon() {
+  themeToggle.textContent =
+    document.documentElement.dataset.theme === "dark" ? "☀️" : "🌙";
+}
+
+themeToggle.addEventListener("click", () => {
+  const root = document.documentElement;
+  root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+  try { localStorage.setItem("yap-theme", root.dataset.theme); } catch (e) {}
+  syncThemeIcon();
+});
+
 // ==================== BOOT ====================
 updateRate();
 updatePitch();
 loadVoices();
 document.getElementById("year").textContent = new Date().getFullYear();
+syncThemeIcon();
 </script>
 </body>
 </html>
