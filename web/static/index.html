@@ -571,10 +571,65 @@
     .stt-actions .btn { width: 100%; justify-content: center; }
     .deco { display: none; }
     .footer-bar { flex-direction: column; text-align: center; }
+    .stat-card { grid-column: span 2; }
   }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.001s !important; transition-duration: 0.001s !important; }
+  }
+
+  /* ==================== SCROLL REVEALS ==================== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal.delay-1 { transition-delay: 0.08s; }
+  .reveal.delay-2 { transition-delay: 0.16s; }
+  .reveal.delay-3 { transition-delay: 0.24s; }
+
+  /* ---- 3D card tilt ---- */
+  .tilt {
+    transform-style: preserve-3d;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .tilt:hover {
+    transform: perspective(800px) rotateX(var(--tx, 0)) rotateY(var(--ty, 0)) translateY(-4px);
+  }
+
+  /* ---- enhanced stat counters ---- */
+  .stat-num {
+    font-size: 2.2rem;
+    font-weight: 700;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    line-height: 1.2;
+  }
+  .stat-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--ink-faint);
+    margin-top: 6px;
+  }
+  .stat-card {
+    text-align: center;
+    padding: 20px 16px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--r-md);
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    box-shadow: var(--shadow), inset 0 1px 0 var(--glass-hi);
   }
 </style>
 <script>
@@ -632,6 +687,26 @@
     <span>Record &amp; get timestamps</span>
   </div>
 
+  <!-- STATS ROW -->
+  <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:24px 0 10px;">
+    <div class="stat-card reveal delay-1">
+      <div class="stat-num" data-target="100">0</div>
+      <div class="stat-label">Neural Voices</div>
+    </div>
+    <div class="stat-card reveal delay-2">
+      <div class="stat-num" data-target="12" data-suffix="+">0</div>
+      <div class="stat-label">Languages</div>
+    </div>
+    <div class="stat-card reveal delay-3">
+      <div class="stat-num" data-target="0">$0</div>
+      <div class="stat-label">Cost</div>
+    </div>
+    <div class="stat-card reveal">
+      <div class="stat-num" data-target="30" data-suffix="s">0</div>
+      <div class="stat-label">Avg Response</div>
+    </div>
+  </div>
+
   <!-- ==================== TEXT → VOICE ==================== -->
   <div class="section-label">
     <div class="icon">▶</div>
@@ -641,7 +716,7 @@
   </div>
 
   <div class="main-grid">
-    <section class="card" style="grid-column: 1 / -1;">
+    <section class="card reveal tilt" style="grid-column: 1 / -1;">
       <div class="card-head">
         <span>Your Script</span>
         <span class="tag">Type it</span>
@@ -654,7 +729,7 @@
       </div>
     </section>
 
-    <section class="card">
+    <section class="card reveal delay-1 tilt">
       <div class="card-head">
         <span>Pick a Voice</span>
         <span class="tag">♂♀</span>
@@ -665,7 +740,7 @@
       </div>
     </section>
 
-    <section class="card">
+    <section class="card reveal delay-2 tilt">
       <div class="card-head">
         <span>Speed &amp; Pitch</span>
         <span class="tag">Tweak</span>
@@ -714,7 +789,7 @@
     <span class="sticker pink" style="font-size:0.6rem; padding:4px 10px;">STT</span>
   </div>
 
-  <section class="card stt-card">
+  <section class="card stt-card reveal tilt">
     <div class="card-head">
       <span>Record or Upload</span>
       <span class="tag">Timestamps</span>
@@ -1084,6 +1159,65 @@ updatePitch();
 loadVoices();
 document.getElementById("year").textContent = new Date().getFullYear();
 syncThemeIcon();
+
+// ==================== SCROLL REVEALS ====================
+(function initReveals() {
+  var reveals = document.querySelectorAll('.reveal');
+  if (!reveals.length) return;
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  reveals.forEach(function (el) { io.observe(el); });
+})();
+
+// ==================== 3D CARD TILT ====================
+(function initTilt() {
+  var tilts = document.querySelectorAll('.tilt');
+  tilts.forEach(function (el) {
+    el.addEventListener('mousemove', function (e) {
+      var r = el.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width - 0.5;
+      var y = (e.clientY - r.top) / r.height - 0.5;
+      el.style.setProperty('--tx', (-y * 7).toFixed(2) + 'deg');
+      el.style.setProperty('--ty', (x * 7).toFixed(2) + 'deg');
+    });
+    el.addEventListener('mouseleave', function () {
+      el.style.setProperty('--tx', '0');
+      el.style.setProperty('--ty', '0');
+    });
+  });
+})();
+
+// ==================== STAT COUNTERS ====================
+(function initCounters() {
+  var nums = document.querySelectorAll('.stat-num[data-target]');
+  if (!nums.length) return;
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      io.unobserve(e.target);
+      var el = e.target;
+      var target = parseInt(el.dataset.target, 10);
+      var suffix = el.dataset.suffix || '';
+      var prefix = el.textContent.charAt(0) === '$' ? '$' : '';
+      var start = performance.now();
+      var duration = 1400;
+      function tick(now) {
+        var p = Math.min((now - start) / duration, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = prefix + Math.round(target * eased) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+  }, { threshold: 0.4 });
+  nums.forEach(function (el) { io.observe(el); });
+})();
 </script>
 </body>
 </html>
